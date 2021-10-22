@@ -2,7 +2,7 @@ import methods
 import numpy as np
 from tqdm import tqdm
 
-for d in tqdm(range(2,26)):
+for d in tqdm(range(2,50,2)):
     real_stream = methods.make_real_stream(d, random_state=1410,
                                            n_projections=2,
                                            metric_treshold=.55)

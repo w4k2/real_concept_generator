@@ -6,16 +6,20 @@ import matplotlib.pyplot as plt
 from scipy.signal import medfilt
 from scipy.ndimage import gaussian_filter1d
 
-features = np.arange(2,25,2)[:12]
+features = np.arange(2,50,2)[:16]
 print(len(features))
 
-fig, ax = plt.subplots(3, 4, figsize=(18,10), sharex='all', sharey='all')
+mm = 10
+fig, ax = plt.subplots(4, 4,
+                       figsize=(mm*1.618,mm),
+                       sharex=True, sharey=True)
 
 for id, f in enumerate(features):
     # print(id)
     # exit()
 
     concepts = np.load('streams/all_%i_concepts.npy' % f)
+    dbnames = np.load('streams/all_%i_dbnames.npy' % f)
     n_chunks = concepts[-1]
     chunk_size=250
 
@@ -69,13 +73,30 @@ for id, f in enumerate(features):
 
     sc = gaussian_filter1d(scores, sigma=2)
 
+    aa = ax[id1, id2]
+
+    for cidx, concept in enumerate(concepts):
+        aa.text(concept-12, .5, dbnames[cidx],
+                ha='center',
+                va='center',
+                rotation=90,
+                color='tomato')
+
+
+
     ax[id1, id2].plot(sc, color='black')
-    ax[id1, id2].vlines(concepts, 0.4, 1, color='tomato', ls=':')
+    ax[id1, id2].vlines(concepts, 0, 1, color='tomato', ls=':')
     ax[id1, id2].set_title("%i features" % f)
     ax[id1, id2].grid(color='gray', linestyle=':', linewidth=.3, axis='y')
-    ax[id1, id2].set_ylim(0.4, 1)
+    ax[id1, id2].set_ylim(0, 1)
+    ax[id1, id2].set_xlim(0, 250)
     ax[id1, id2].spines['top'].set_visible(False)
     ax[id1, id2].spines['right'].set_visible(False)
+
+    if id2==0:
+        ax[id1, id2].set_ylabel('Accuracy score')
+    if id1==2:
+        ax[id1, id2].set_xlabel('Processed chunks')
 
 
 plt.tight_layout()
