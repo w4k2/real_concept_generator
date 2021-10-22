@@ -2,10 +2,15 @@ import methods
 import numpy as np
 from tqdm import tqdm
 
+<<<<<<< HEAD
 for d in tqdm(range(2,26)):
     real_stream = methods.make_real_stream(d, random_state=1410,
                                            n_projections=2,
                                            metric_treshold=.55)
+=======
+for d in tqdm(range(2,50)):
+    real_stream = methods.make_real_stream(d, random_state=1410)
+>>>>>>> 6796f91354fcfeb707c1acea581c26ecba3db766
 
     if real_stream is not None:
         db, concepts, dbnames, scores = real_stream
