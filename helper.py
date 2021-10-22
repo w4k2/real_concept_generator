@@ -42,9 +42,8 @@ def csv2Xy(path):
 def intersection(lst1, lst2):
     return list(set(lst1) & set(lst2))
 
-
-def datasets_of_tags(tag_filter):
-    files = dir2files("datasets/")
+def datasets_of_tags(tag_filter, directory='datasets/'):
+    files = dir2files(directory)
     datasets = []
     for file in files:
         X, y, dbname, tags = csv2Xy(file)

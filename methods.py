@@ -4,77 +4,101 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import KFold
 
 def make_real_stream(d=2,
                      base_clf=GaussianNB(),
-                     base_metric=accuracy_score):
+                     base_metric=accuracy_score,
+                     base_directory='datasets/',
+                     tag_filter=['binary'],
+                     sampling_strategy={
+                         0: 3000,
+                         1: 3000
+                     },
+                     random_state=None,
+                     min_samples=200,
+                     n_projections=10,
+                     metric_treshold=.75,
+                     stream_requirements=(250, 100)
+                     ):
+    # Establish random state
+    np.random.seed(random_state)
 
-    X_s = []
-    y_s = []
-    dbnames = []
-    n_s = []
-    scores = []
-    counts = []
+    # Initialize concept containers
+    X_s, y_s = [], []
 
-    datasets = helper.datasets_of_tags(['binary'])
+    # Initialize descriptive containers
+    dbnames, scores, counts = [], [], []
 
+    # Prepare kf object
+    kf = KFold(n_splits=5)
+
+    # Gather all datasets
+    datasets = helper.datasets_of_tags(tag_filter,
+                                       base_directory)
+
+    # Iterate datasets
     for i, dataset in enumerate(datasets):
+        # Extract dataset
         X, y, dbname = dataset
-        if X.shape[1] >= d:
-            if X.shape[0] < 200:
-                continue
 
-            best = -2.
-            bidx = 0
-            columns = None
+        # Ignore small datasets
+        if X.shape[0] < min_samples:
+            continue
 
-            for z in range(100):
-                selcons = np.random.choice(list(range(X.shape[1])), size=d, replace=False)
+        # Prepare search for projection
+        best = -2.
+        bidx = 0
+        selected_projection = None
 
-                n = len(y)
-                X_ = X[:,selcons]
+        # Search for projection
+        for p_idx in range(n_projections):
+            # Randomize projection
+            projection = np.random.uniform(size=(X.shape[1], d))
 
-                clf = clone(base_clf).fit(X_, y)
-                y_pred = clf.predict(X_)
-                score = base_metric(y, y_pred)
+            # Project
+            X_ = X @ projection
 
-                if score > best:
-                    columns = selcons
-                    best = score
-                    bidx = z
+            # Gather CV score
+            score = np.mean([base_metric(y[test],clone(base_clf).fit(X_[train], y[train]).predict(X_[test]))
+                             for train, test in kf.split(X_)])
 
-            if best > .75:
-                scores.append(np.copy(best))
+            # Store best overall
+            if score > best:
+                selected_projection = projection
+                best = score
+                bidx = p_idx
 
-                X_ = X[:,columns]
+        # Verify if dataset meets the requirements
+        if best > metric_treshold:
+            # Project
+            X_ = X @ selected_projection
 
-                sm = SMOTE(random_state=42,
-                           sampling_strategy={
-                               0: 3000,
-                               1: 3000
-                           })
-                X_, y = sm.fit_resample(X_, y)
+            # Oversample
+            sm = SMOTE(random_state=random_state,
+                       sampling_strategy=sampling_strategy)
+            X_, y = sm.fit_resample(X_, y)
 
-                p = np.random.permutation(len(y))
+            # Permute samples
+            p = np.random.permutation(len(y))
 
-                X_s.append(X_[p])
-                y_s.append(y[p])
-                dbnames.append(dbname)
-                n_s.append(X.shape[1])
-                counts.append(X_.shape[0])
+            # Append dataset
+            X_s.append(X_[p])
+            y_s.append(y[p])
 
+            # Append parameters
+            scores.append(np.copy(best))
+            dbnames.append(dbname)
+            counts.append(X_.shape[0])
+
+    # Concatenate datasets
     X = np.concatenate(X_s, axis=0)
     y = np.concatenate(y_s, axis=0)
-
     db = np.concatenate((X, y[:,np.newaxis]), axis=1)
 
-    if len(y)/250 >= 100:
-        print("# D=%i" % d, len(dbnames), db.shape, np.unique(y, return_counts=True), len(y)/250, '%.3f:%.3f:%.3f' % (np.min(scores), np.max(scores), np.mean(scores)))
-
+    # Verify if stream meets the requirements
+    if len(y)/stream_requirements[1] >= stream_requirements[0]:
         concepts = np.rint(np.cumsum(counts)/250)
-
-        return db, concepts
-
-
+        return db, concepts, np.array(dbnames), np.array(scores)
     else:
         return None
