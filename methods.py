@@ -6,20 +6,20 @@ from sklearn.metrics import accuracy_score
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import KFold
 
-def make_real_stream(d=2,
+def make_real_stream(d=20,
                      base_clf=GaussianNB(),
                      base_metric=accuracy_score,
                      base_directory='datasets/',
                      tag_filter=['binary'],
-                     sampling_strategy={
-                         0: 3000,
-                         1: 3000
-                     },
                      random_state=None,
                      min_samples=200,
                      n_projections=10,
                      metric_treshold=.75,
-                     stream_requirements=(250, 100)
+                     stream_requirements=(250, 100),
+                     sampling_strategy={
+                         0: 3000,
+                         1: 3000
+                     }
                      ):
     # Establish random state
     np.random.seed(random_state)
