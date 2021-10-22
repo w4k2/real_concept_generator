@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import medfilt
 from scipy.ndimage import gaussian_filter1d
 
-features = np.arange(2,50,4)[:12]
+features = np.arange(2,25,2)[:12]
 print(len(features))
 
 fig, ax = plt.subplots(3, 4, figsize=(18,10), sharex='all', sharey='all')
@@ -27,7 +27,7 @@ for id, f in enumerate(features):
                         n_chunks=n_chunks, chunk_size=chunk_size)
 
     clf = MLPClassifier(hidden_layer_sizes=(20))
-    
+
     scores= []
 
     while chunk := stream.get_chunk():
@@ -60,7 +60,7 @@ for id, f in enumerate(features):
             Train
             """
             [clf.partial_fit(X, y) for i in range(10)]
-    
+
     id1 = int(id/4)
     id2 = id%4
 
@@ -79,5 +79,6 @@ for id, f in enumerate(features):
 
 
 plt.tight_layout()
-plt.savefig("foo.png")
+plt.savefig("figures/exp_vis.eps")
+plt.savefig("figures/exp_vis.png")
 exit()
