@@ -27,7 +27,7 @@ for id, f in enumerate(features):
         n_chunks = 250
         concepts = concepts[concepts<n_chunks]
 
-    stream = sl.streams.NPYParser('streams/all_9.npy',
+    stream = sl.streams.NPYParser('streams/all_%i.npy' % f,
                         n_chunks=n_chunks, chunk_size=chunk_size)
 
     clf = MLPClassifier(hidden_layer_sizes=(20))
@@ -81,7 +81,6 @@ for id, f in enumerate(features):
                 va='center',
                 rotation=90,
                 color='tomato')
-
 
 
     ax[id1, id2].plot(sc, color='black')
