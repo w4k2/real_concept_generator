@@ -2,7 +2,7 @@ import methods
 import numpy as np
 from tqdm import tqdm
 
-for d in tqdm(range(2,30)):
+for d in tqdm(range(2,50)):
     real_stream = methods.make_real_stream(d, random_state=1410)
 
     if real_stream is not None:
