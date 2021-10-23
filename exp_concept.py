@@ -18,7 +18,7 @@ db = np.load('streams/all_%i.npy' % f)
 concepts_diff = concepts[1]-concepts[0]
 print(concepts_diff)
 
-concepts_mids = concepts - .5*concepts_diff 
+concepts_mids = concepts - .5*concepts_diff
 concepts_mids = concepts_mids[:8]
 print(concepts_mids)
 
