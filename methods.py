@@ -54,7 +54,7 @@ def make_real_stream(d=20,
         # Search for projection
         for p_idx in range(n_projections):
             # Randomize projection
-            projection = np.random.uniform(size=(X.shape[1], d))
+            projection = np.random.normal(size=(X.shape[1], d))
 
             # Project
             X_ = X @ projection
