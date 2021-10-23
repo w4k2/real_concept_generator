@@ -26,7 +26,7 @@ if n_chunks > 250:
 stream = sl.streams.NPYParser('streams/all_%i.npy' % f,
                     n_chunks=n_chunks, chunk_size=chunk_size)
 
-clf = MLPClassifier(hidden_layer_sizes=(20), random_state=73373)
+clf = MLPClassifier(hidden_layer_sizes=(20), random_state=765)
 detector = DDM()
 
 scores= []
