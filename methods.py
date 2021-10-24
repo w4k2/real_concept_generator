@@ -14,7 +14,7 @@ def make_real_stream(d=20,
                      random_state=None,
                      min_samples=200,
                      n_projections=10,
-                     metric_treshold=.75,
+                     metric_treshold=(.6,.7),
                      stream_requirements=(250, 100),
                      sampling_strategy={
                          0: 3000,
@@ -64,13 +64,14 @@ def make_real_stream(d=20,
                              for train, test in kf.split(X_)])
 
             # Store best overall
-            if score > best:
+            if (score > metric_treshold[0]) * (score < metric_treshold[1]):
                 selected_projection = projection
                 best = score
                 bidx = p_idx
+                break
 
         # Verify if dataset meets the requirements
-        if best > metric_treshold:
+        if best > metric_treshold[0]:
             # Project
             X_ = X @ selected_projection
 

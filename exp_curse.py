@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ww = 5
-fig, ax = plt.subplots(1, 1, figsize=(ww*1.618, ww))
+fig, ax = plt.subplots(1, 2, figsize=(ww*1.618*2, ww))
 #ax = ax.ravel()
 
 # Iterate streams
@@ -17,42 +17,83 @@ n_chunks = 1000
 sconfigs = [('all_%i' % d, n_chunks, d)
             for d in range(2,26)]
 
-score_to_dim = []
-std_to_dim = []
 
-for stream_idx, (sname, n_chunks, d) in enumerate(sconfigs):
-    # Generate stream
-    stream = NPYParser('streams/%s.npy' % sname,
-                        n_chunks=n_chunks, chunk_size=250)
+categories = {
+    'a': (.5, .6),
+    'B': (.6, .7),
+    'C': (.7, .8),
+    'D': (.8, .9),
+    'E': (.9, 1),
+}
+labels = [
+    'all',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%'
+]
+colors = [
+    ('#555555', '#DDDDDD'),
+    ('#DD5555', '#FFDDDD'),
+    ('#55DD55', '#DDFFDD'),
+    ('#5555DD', '#DDDDFF'),
+    ('#DD55DD', '#FFDDFF'),
+]
 
-    concepts = np.load('streams/all_%i_concepts.npy' % d)
-    dbnames = np.load('streams/all_%i_dbnames.npy' % d)
-    scores = np.load('streams/all_%i_scores.npy' % d)
+for cidx, category in enumerate(categories):
+    score_to_dim = []
+    std_to_dim = []
+    stream_lengths = []
 
-    mean_scores = np.mean(scores)
-    std_scores = np.std(scores)
+    for stream_idx, (sname, n_chunks, d) in enumerate(sconfigs):
+        # Generate stream
+        stream = NPYParser('streams/%s.npy' % sname,
+                            n_chunks=n_chunks, chunk_size=250)
 
-    score_to_dim.append([d, mean_scores])
-    std_to_dim.append([d, std_scores])
+        concepts = np.load('streams/%s_all_%i_concepts.npy' % (category, d))
+        dbnames = np.load('streams/%s_all_%i_dbnames.npy' % (category, d))
+        scores = np.load('streams/%s_all_%i_scores.npy' % (category, d))
+        db = np.load('streams/%s_all_%i.npy' % (category, d))
+
+        stream_lengths.append(db.shape[0])
+        print(category, db.shape[0])
+
+        mean_scores = np.mean(scores)
+        std_scores = np.std(scores)
+
+        score_to_dim.append([d, mean_scores])
+        std_to_dim.append([d, std_scores])
 
 
-score_to_dim = np.array(score_to_dim).T
-std_to_dim = np.array(std_to_dim).T
-print(score_to_dim)
+    score_to_dim = np.array(score_to_dim).T
+    std_to_dim = np.array(std_to_dim).T
+    print(score_to_dim.shape)
 
-ax.fill_between(score_to_dim[0],
-                score_to_dim[1]-std_to_dim[1],
-                score_to_dim[1]+std_to_dim[1],
-                color='#CCCCCC')
-ax.plot(score_to_dim[0], score_to_dim[1],
-        c='black')
-ax.grid(ls=':')
-ax.set_xlim(2,25)
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.set_xlabel('Problem dimensionality')
-ax.set_ylabel('Full-model accuracy')
-ax.set_ylim(.5,1)
+    if cidx != 0:
+        ax[0].fill_between(score_to_dim[0],
+                        score_to_dim[1]-std_to_dim[1],
+                        score_to_dim[1]+std_to_dim[1],
+                        color=colors[cidx][1])
+    ax[0].plot(score_to_dim[0], score_to_dim[1],
+               c=colors[cidx][0], label=labels[cidx],
+               ls='-' if cidx!=0 else ":")
+
+    ax[1].plot(score_to_dim[0], stream_lengths, label=labels[cidx],
+               c=colors[cidx][0],
+               ls='-' if cidx!=0 else ":")
+
+for i in range(2):
+    ax[i].grid(ls=':')
+    ax[i].legend(frameon=False, ncol=5, loc=4)
+    ax[i].set_xlim(2,25)
+    ax[i].spines['top'].set_visible(False)
+    ax[i].spines['right'].set_visible(False)
+    ax[i].set_xlabel('Problem dimensionality')
+
+ax[0].set_ylabel('Average accuracy')
+ax[1].set_ylabel('Number of samples')
+ax[0].set_ylim(.5,1)
+ax[1].set_ylim(0, 300000)
 
 plt.tight_layout()
 

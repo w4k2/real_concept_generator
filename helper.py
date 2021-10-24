@@ -18,7 +18,7 @@ def tags4Xy(X, y):
         tags.append("binary")
     else:
         tags.append("multi-class")
-    if numberOfFeatures >= 8:
+    if numberOfFeatures >= 10:
         tags.append("multi-feature")
 
     # Calculate ratio
@@ -26,7 +26,7 @@ def tags4Xy(X, y):
     for y_ in y:
         ratio[y_] += 1
     ratio = [int(round(i / min(ratio))) for i in ratio]
-    if max(ratio) > 4:
+    if max(ratio) >= 4:
         tags.append("imbalanced")
 
     return tags
