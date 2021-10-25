@@ -14,7 +14,7 @@ def make_real_stream(d=20,
                      random_state=None,
                      min_samples=200,
                      n_projections=10,
-                     metric_treshold=(.6,.7),
+                     metric_treshold=(.55,1),
                      stream_requirements=(250, 100),
                      sampling_strategy={
                          0: 3000,

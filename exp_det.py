@@ -7,12 +7,15 @@ from scipy.signal import medfilt
 from scipy.ndimage import gaussian_filter1d
 from _det import DDM
 
-mm = 7
+tomato = '#F2704D'
+blubato = '#4D70F2'
+
+mm = 5
 fig, ax = plt.subplots(1, 1,
                        figsize=(mm*1.618,mm),
                        sharex=True, sharey=True)
 
-f = 20
+f = 8
 
 concepts = np.load('streams/all_%i_concepts.npy' % f)
 dbnames = np.load('streams/all_%i_dbnames.npy' % f)
@@ -70,15 +73,18 @@ print(detector.drift, drf_idxs)
 sc = gaussian_filter1d(scores, sigma=2)
 
 ax.plot(sc, color='black')
-ax.vlines(drf_idxs, 0, 1, color='orange', ls='-', linewidth = 4)
+ax.vlines(drf_idxs, 0, 1, color=tomato, ls='-', linewidth = 4)
 
-ax.vlines(concepts, 0, 1, color='tomato', ls=':')
+ax.vlines(concepts, 0, 1, color=blubato, ls=':')
 ax.set_title("Drifts detected with DDM")
 ax.grid(color='gray', linestyle=':', linewidth=.3, axis='y')
 ax.set_ylim(0.4, 1)
 ax.set_xlim(0, 250)
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
+ax.set_xlabel('Processed chunks')
+ax.set_ylabel('Accuracy score')
+ax.set_xticks(concepts)
 
 plt.tight_layout()
 plt.savefig("figures/exp_det.eps")

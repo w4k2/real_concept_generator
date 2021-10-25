@@ -3,11 +3,12 @@ from methods import make_real_stream
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 
-for d in range(2,50):
+for d in range(2,61):
+    print(d)
     # Configure stream
     config = {
-        'd': d, 'random_state':1410, 'n_projections':10,
-        'metric_treshold': (.55, 1), 'base_clf': GaussianNB(),
+        'd': d, 'random_state':1410, 'n_projections':500,
+        'metric_treshold': (.55, 1.1), 'base_clf': GaussianNB(),
         'base_metric': accuracy_score, 'base_directory': 'datasets/',
         'tag_filter': ['binary'], 'min_samples': 200,
         'stream_requirements':(250, 100),
@@ -20,10 +21,10 @@ for d in range(2,50):
     # Store stream
     if real_stream:
         db, concepts, dbnames, scores = real_stream
-        np.save('streams/a_all_%i_concepts' % d, concepts)
-        np.save('streams/a_all_%i_dbnames' % d, dbnames)
-        np.save('streams/a_all_%i_scores' % d, scores)
-        np.save('streams/a_all_%i' % d, db)
+        np.save('streams/all_%i_concepts' % d, concepts)
+        np.save('streams/all_%i_dbnames' % d, dbnames)
+        np.save('streams/all_%i_scores' % d, scores)
+        np.save('streams/all_%i' % d, db)
 
         print('CONCEPTS', concepts)
         print('DBNAMES', dbnames)

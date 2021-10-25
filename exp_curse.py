@@ -8,8 +8,8 @@ from time import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-ww = 5
-fig, ax = plt.subplots(1, 2, figsize=(ww*1.618*2, ww))
+ww = 7
+fig, ax = plt.subplots(2, 1, figsize=(ww, ww))
 #ax = ax.ravel()
 
 # Iterate streams
@@ -32,11 +32,14 @@ labels = [
     '80-90%',
     '90-100%'
 ]
+tomato = '#F2704D'
+blubato = '#4D70F2'
+
 colors = [
-    ('#555555', '#DDDDDD'),
-    ('#DD5555', '#FFDDDD'),
-    ('#55DD55', '#DDFFDD'),
-    ('#5555DD', '#DDDDFF'),
+    ('black', '#DDDDDD'),
+    ('#F2704D', '#FFDDDD'),
+    ('#70F24D', '#DDFFDD'),
+    ('#4D70F2', '#DDDDFF'),
     ('#DD55DD', '#FFDDFF'),
 ]
 
