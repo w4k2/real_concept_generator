@@ -42,8 +42,6 @@ while chunk := stream.get_chunk():
     X, y = chunk
     y = y.astype(int)
 
-    # print(X.shape, y.shape)
-
     # Only train on first chunk
     if stream.chunk_id == 0:
         [clf.partial_fit(X, y, np.unique(y)) for i in range(10)]

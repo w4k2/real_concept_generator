@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 
 ww = 7
 fig, ax = plt.subplots(2, 1, figsize=(ww, ww))
-#ax = ax.ravel()
 
 # Iterate streams
 n_chunks = 1000

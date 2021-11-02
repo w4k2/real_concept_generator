@@ -16,9 +16,6 @@ fig, ax = plt.subplots(5, vvv,
                        sharex=True, sharey=True)
 
 for id, f in enumerate(features):
-    # print(id)
-    # exit()
-
     concepts = np.load('streams/all_%i_concepts.npy' % f)
     dbnames = np.load('streams/all_%i_dbnames.npy' % f)
     n_chunks = concepts[-1]
@@ -43,8 +40,6 @@ for id, f in enumerate(features):
         X, y = chunk
         y = y.astype(int)
 
-        # print(X.shape, y.shape)
-
         # Only train on first chunk
         if stream.chunk_id == 0:
             [clf.partial_fit(X, y, np.unique(y)) for i in range(10)]
@@ -68,9 +63,6 @@ for id, f in enumerate(features):
 
     id1 = int(id/vvv)
     id2 = id%vvv
-
-    # acum = np.linspace(1, n_chunks, len(scores))
-    # acscores = np.cumsum(scores) / acum
 
     sc = gaussian_filter1d(scores, sigma=2)
 

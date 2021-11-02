@@ -40,10 +40,6 @@ for id, c in enumerate(concepts_mids.astype(int)):
 
     X = db[ch_start:ch_end,:-1]
     y = db[ch_start:ch_end,-1]
-    #ax[id1, id2].scatter(X[:,0],
-    #                     X[:,1],
-    #                     c = db[ch_start:ch_end,2],
-    #                     cmap='copper')
 
     ax[id1, id2].scatter(X[y==0,0],
                          X[y==0,1],
